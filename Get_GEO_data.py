@@ -6,6 +6,7 @@ GEO Self-Download Database Construction Script
 - manifest.csv is used to record download status, making it easy to resume after interruption
 - Thread concurrency is controllable
 """
+
 import os
 import time
 import gzip
@@ -411,13 +412,16 @@ def process_gse(info):
     return f"{gse} [{tech}] done"
 
 # ------------------- Main Process -------------------
-def search_gse_list(keyword, max_gse=100):
+def search_gse_list(keyword, max_gse=1000):
     print(f"[SEARCH] searching: {keyword}")
     query = f"({keyword}) AND \"Homo sapiens\"[Organism] AND GSE[Entry Type]"
+
     try:
+        # 第一次搜索仅为了获取总数
         h = Entrez.esearch(db="gds", term=query, retmax=0)
         total = int(Entrez.read(h)["Count"])
         h.close()
+
         limit = min(total, max_gse)
         print(f"[SEARCH] found {total}, processing first {limit}")
     except Exception as e:
@@ -427,28 +431,44 @@ def search_gse_list(keyword, max_gse=100):
     results = []
     retstart = 0
     batch = 100
+
     while retstart < limit:
         try:
-            h = Entrez.esearch(db="gds", term=query, retstart=retstart, retmax=min(batch, limit-retstart), usehistory="y")
+            # 1. 获取 ID 列表 (不需要 usehistory)
+            h = Entrez.esearch(db="gds", term=query, retstart=retstart, retmax=min(batch, limit - retstart))
             res = Entrez.read(h)
             h.close()
-            we = res["WebEnv"]; qk = res["QueryKey"]; ids = res["IdList"]
-            h2 = Entrez.esummary(db="gds", webenv=we, query_key=qk, retstart=0, retmax=len(ids))
+
+            ids = res["IdList"]
+            if not ids:
+                break
+
+            # 2. 修复点：直接使用 ID 列表请求 summary，而不是依赖 WebEnv 的偏移量
+            # 这样确保获取的就是本轮循环查到的那些 ID
+            h2 = Entrez.esummary(db="gds", id=",".join(ids))
             recs = Entrez.read(h2)
             h2.close()
+
             for r in recs:
                 results.append({
                     "Accession": r.get("Accession"),
-                    "Type": r.get("gdsType",""),
-                    "n_samples": int(r.get("n_samples",0)),
-                    "title": r.get("title",""),
-                    "summary": r.get("summary","")
+                    "Type": r.get("gdsType", ""),
+                    "n_samples": int(r.get("n_samples", 0)),
+                    "title": r.get("title", ""),
+                    "summary": r.get("summary", "")
                 })
+
             retstart += len(ids)
+            print(f"  > Fetched batch {retstart}/{limit}")  # 增加进度提示
             time.sleep(0.4)
+
         except Exception as e:
-            print("[WARN] batch fetch failed:", e)
-            break
+            print(f"[WARN] batch fetch failed at retstart={retstart}: {e}")
+            time.sleep(5)
+            # 即使失败也尝试跳过当前 batch，避免死循环
+            retstart += batch
+            continue
+
     return results
 
 def main():

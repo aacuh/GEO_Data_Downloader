@@ -24,12 +24,13 @@ from tqdm import tqdm
 
 # ===================== User Settings =====================
 try:
-    from config import NCBI_EMAIL, NCBI_API_KEY, NCBI_KEYWORD, MAX_GSE, THREADS
+    from config import NCBI_EMAIL, NCBI_API_KEY, NCBI_KEYWORD, MAX_GSE, THREADS, OUT_ROOT
     Entrez.email = NCBI_EMAIL
     Entrez.api_key = NCBI_API_KEY
     KEYWORD = NCBI_KEYWORD
     MAX_GSE = MAX_GSE
     THREADS = THREADS
+    OUT_ROOT = OUT_ROOT
 except ImportError:
     Entrez.email = "your_email@example.com"
     Entrez.api_key = ""

@@ -25,6 +25,7 @@ Front-end operation：python Get_data_new.py
 Run cluster in the background：nohup python Get_data_new.py > geo_download.log 2>&1 &
 
 ///  
+
 Running result  
 ├── Downloaded_Data/       # Output root directory (can be customized in down_config.py as OUT_ROOT)  
 │   ├── scRNA/                 # scRNA-seq data (automatically identified)    
@@ -40,10 +41,13 @@ Running result
 ├── config.py                  # Your custom configuration file  
 ├── Get_data_new.py            # Main Download Script    
 └── geo_download.log           # Operation log (generated during background operation)    
+
 ///    
+
 Attention!!!   
 
 Since the GEO database can easily interrupt the download of large files, scRNA-seq downloads may sometimes fail. Please check the log file after running the script.   
 
 Errors in determining the type of technology may occur due to misleading series titles or descriptions, so manual data verification is required after using this script.  
+
 ///  

@@ -50,4 +50,6 @@ Since the GEO database can easily interrupt the download of large files, scRNA-s
 
 Errors in determining the type of technology may occur due to misleading series titles or descriptions, so manual data verification is required after using this script.  
 
+The script only supports retrieving GSE for organisms that are Homo sapiens. If you need to change the organism, please modify the function search_gse_list().    
+
 ///  

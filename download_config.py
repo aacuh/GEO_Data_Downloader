@@ -1,0 +1,5 @@
+NCBI_EMAIL = ""
+NCBI_API_KEY = ""
+NCBI_KEYWORD = ""
+MAX_GSE = ""
+THREADS = ""

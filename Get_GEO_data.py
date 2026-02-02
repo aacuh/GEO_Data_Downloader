@@ -417,7 +417,6 @@ def search_gse_list(keyword, max_gse=1000):
     query = f"({keyword}) AND \"Homo sapiens\"[Organism] AND GSE[Entry Type]"
 
     try:
-        # 第一次搜索仅为了获取总数
         h = Entrez.esearch(db="gds", term=query, retmax=0)
         total = int(Entrez.read(h)["Count"])
         h.close()
@@ -443,8 +442,6 @@ def search_gse_list(keyword, max_gse=1000):
             if not ids:
                 break
 
-            # 2. 修复点：直接使用 ID 列表请求 summary，而不是依赖 WebEnv 的偏移量
-            # 这样确保获取的就是本轮循环查到的那些 ID
             h2 = Entrez.esummary(db="gds", id=",".join(ids))
             recs = Entrez.read(h2)
             h2.close()
@@ -459,13 +456,12 @@ def search_gse_list(keyword, max_gse=1000):
                 })
 
             retstart += len(ids)
-            print(f"  > Fetched batch {retstart}/{limit}")  # 增加进度提示
+            print(f"  > Fetched batch {retstart}/{limit}") 
             time.sleep(0.4)
 
         except Exception as e:
             print(f"[WARN] batch fetch failed at retstart={retstart}: {e}")
             time.sleep(5)
-            # 即使失败也尝试跳过当前 batch，避免死循环
             retstart += batch
             continue
 

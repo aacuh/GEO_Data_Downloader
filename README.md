@@ -22,7 +22,7 @@ Run the script
 
 Front-end operation：python Get_data_new.py
 
-Run cluster in the background：nohup python Get_data_new.py > geo_download.log 2>&1 &
+Run cluster in the background：nohup python Get_GEO_data.py > geo_download.log 2>&1 &
 
 ///  
 

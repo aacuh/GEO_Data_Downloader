@@ -29,7 +29,7 @@ Run cluster in the background：nohup python Get_GEO_data.py > geo_download.log 
 Running result  
 ├── Downloaded_Data/       # Output root directory (can be customized in down_config.py as OUT_ROOT)  
 │   ├── scRNA/                 # scRNA-seq data (automatically identified)    
-│   │   ├── GSE289389/   
+│   │   ├── GSExxxxxx/   
 │   │   │   ├── Metadata/      # Sample Metadata（full_metadata.csv）  
 │   │   │   ├── Processed_Data/# Expression matrix（expression_matrix.txt）    
 │   │   │   └── Supplementary_Raw/ # RAW.tar Original File    
